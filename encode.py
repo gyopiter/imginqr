@@ -1,5 +1,4 @@
-    # -*- coding: utf-8 -*-
-
+# -*- coding: utf-8 -*-
 import os
 import qrcode
 from PIL import Image
@@ -10,9 +9,9 @@ import base64
 import numpy as np
 import cv2
 
-InputfilePath = './sample/kenpo.html'
+InputfilePath = './sample/InputSample.mp4'
 outputQrPath  = './QRimage/test'
-outputfilePath = 'out.html'
+outputfilePath = 'out.mp4'
 baseimagePath = './sample/InputBaseImage.jpg'
 inputBaseimagePath = 'outputBaseImage.png'
 
@@ -75,9 +74,10 @@ def makeQRimage(qrimageList, basesize):
 
 #===実装
 def steganoDecode(img, layer):
+    layer = 21
     decodedImageList = []
     imgArray = np.array(img)
-    for i in range(layer):
+    for i in range(21):
         hash = (imgArray[:,:,(i%3)] % pow(2, math.ceil(layer/3)))
         arr = (hash >> int(i/3)) % 2
         decodedImageList.append(Image.fromarray(arr.astype(np.bool_)))
@@ -113,25 +113,6 @@ def playMedia(openPath):
 
 
 if __name__ == '__main__' :
-    '''
-    qrimage = [makeqr(i) for i in chunkbinary(InputfilePath, 624)]
-    #全てのQR画像データを一つのイメージに表すための台紙のサイズを設定
-    base_size = (2508,3541)
-
-    qroutput = makeQRimage(qrimage, base_size)
-    for i in range(len(qroutput))
-        qroutput[i].save(outputQrPath+str(i)+'.jpg')
-    print('ENCODE:', len(qrimage))
-    print("decode...")
-    decoded = []
-    for i in range(len(qroutput)): 
-        img = Image.open(outputQrPath+str(i)+'.jpg')
-        decoded.extend(openAndDecode(img))
-        
-    print('DECODED:', len(decoded))
-    join_file(decoded, outputfilePath)
-    '''
-
     qrimage = [makeqr(i) for i in chunkbinary(InputfilePath, 76)]
     masqimg = makeQRimage(qrimage, Image.open(baseimagePath).size) #list of qr sheet
     layer = len(masqimg)

@@ -1,6 +1,4 @@
-
-    # -*- coding: utf-8 -*-
-
+ # -*- coding: utf-8 -*-
 import os
 import qrcode
 from PIL import Image
@@ -76,6 +74,7 @@ def makeQRimage(qrimageList, basesize):
 
 #===実装
 def steganoDecode(img, layer):
+    layer = 21
     decodedImageList = []
     imgArray = np.array(img)
     for i in range(layer):
@@ -112,41 +111,13 @@ def playMedia(openPath):
     cap.release()
     cv2.destroyAllWindows()
 
-
 if __name__ == '__main__' :
-    '''
-    qrimage = [makeqr(i) for i in chunkbinary(InputfilePath, 624)]
-    #全てのQR画像データを一つのイメージに表すための台紙のサイズを設定
-    base_size = (2508,3541)
-
-    qroutput = makeQRimage(qrimage, base_size)
-    for i in range(len(qroutput))
-        qroutput[i].save(outputQrPath+str(i)+'.jpg')
-    print('ENCODE:', len(qrimage))
-    print("decode...")
-    decoded = []
-    for i in range(len(qroutput)): 
-        img = Image.open(outputQrPath+str(i)+'.jpg')
-        decoded.extend(openAndDecode(img))
-        
-    print('DECODED:', len(decoded))
-    join_file(decoded, outputfilePath)
-    '''
-    '''
-    qrimage = [makeqr(i) for i in chunkbinary(InputfilePath, 76)]
-    masqimg = makeQRimage(qrimage, Image.open(baseimagePath).size) #list of qr sheet
-    layer = len(masqimg)
-    print('LAYER: ', layer)
-    base = setupBaseImage(Image.open(baseimagePath), layer)
-    appendStegano(base, masqimg).save(inputBaseimagePath)
-    '''
-    layer = 12
+    layer = 21
     out = Image.open(inputBaseimagePath)
     steganoList = [i for i in steganoDecode(out, layer)]
     decodedBinaly = []
     for i in range(layer):
         decodedBinaly.extend(openAndDecode(steganoList[i]))
     join_file(decodedBinaly, outputfilePath)
-    #Image.open(outputfilePath).show()
+    Image.open(outputfilePath).show()
     playMedia(outputfilePath)
-    
