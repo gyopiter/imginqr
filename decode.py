@@ -1,19 +1,17 @@
  # -*- coding: utf-8 -*-
-import os
 import qrcode
 from PIL import Image
 from pyzbar.pyzbar import ZBarSymbol, decode
 import math
-import sys
 import base64
 import numpy as np
 import cv2
 
-InputfilePath = './trash/inputLearge.jpg'
+InputfilePath = './sample/lenna.png'
 outputQrPath  = './QRimage/test'
-outputfilePath = 'out.mp4'
+outputfilePath = 'out.jpg'
 baseimagePath = 'inputBaseImage.jpg'
-inputBaseimagePath = 'outputBaseImage.png'
+inputBaseimagePath = 'stegano_longcat.png'
 
 def makeqr(binary):
     qr = qrcode.QRCode(
@@ -42,7 +40,7 @@ def openAndDecode(img):
 
 def chunkbinary(path, chunkLength) :
     readLength, count = 0, 1
-    while (chunkLength % 4 != 0) : chunkLength -= 1
+    chunkLength -= chunkLength % 4
     f = open(path, 'rb')
     data = base64.b64encode(f.read())
     countLength = len(data)
@@ -72,7 +70,6 @@ def makeQRimage(qrimageList, basesize):
         offset += expect_qr
     return outputimagelist
 
-#===実装
 def steganoDecode(img, layer):
     layer = 21
     decodedImageList = []
@@ -96,28 +93,12 @@ def appendStegano(baseImg, steganoList):
         masqimg = steganoList[i].convert('1')
         baseArray[:,:,(i%3)] += np.array(masqimg).astype(np.uint8) * pow(2, int(i/3))
     return Image.fromarray(baseArray)
-#===
-
-def playMedia(openPath):
-    cap = cv2.VideoCapture(openPath)
-    if (cap.isOpened() == False):
-        print("Error opening video  file")
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-        if ret == True:
-            cv2.imshow('Frame', frame)
-            if cv2.waitKey(25) & 0xFF == ord('q'): break
-        else: break
-    cap.release()
-    cv2.destroyAllWindows()
 
 if __name__ == '__main__' :
-    layer = 21
+    layer = 21 # 3*7 = 21, which is maximum number of layer.
     out = Image.open(inputBaseimagePath)
     steganoList = [i for i in steganoDecode(out, layer)]
     decodedBinaly = []
     for i in range(layer):
         decodedBinaly.extend(openAndDecode(steganoList[i]))
     join_file(decodedBinaly, outputfilePath)
-    Image.open(outputfilePath).show()
-    playMedia(outputfilePath)
